@@ -2,6 +2,7 @@ import express from "express"
 import router from "./routes";
 import * as dotenv from "dotenv";
 import { protect } from "./modules/auth";
+import { createNewUser, signin } from "./handlers/user";
 
 
 
@@ -12,6 +13,8 @@ const port = 5000;
 
 app.use(express.static("static"));
 
+app.post('/user',createNewUser)
+app.post('/signin',signin)
 
 app.get("/", (req, res) => {
   res.json({message:"Hello world"})
