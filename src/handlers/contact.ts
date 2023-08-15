@@ -4,54 +4,47 @@ export const getAllContact = async(req,res)=>{
     const user = await prisma.user.findUnique({
         where:{
             id:req.user.id
+        },
+        include:{
+            contacts:true
         }
     })
     if(!user){
-        res.status(400)
+        res.status(404)
         res.json({messgae:"user is not found"})
         return;
     }
-
-    const contact = await prisma.contact.findMany({
-        where:{
-           belongToId:user.id
-        }
-    })
-    res.json({data:contact})
+    res.json({data:user.contacts})
 }
 
 export const createContact = async(req,res)=>{
-    const user = await prisma.user.findUnique({
-        where:{
-            id:req.user.id
+    try {
+        const existingContact = await prisma.contact.findFirst({
+            where: {
+                otherUserId: req.body.otherUserId,
+                belongToId: req.user.id
+            }
+        });
+    
+        if (existingContact) {
+            res.status(409).json({ message: 'Contact already exists' });
+            return;
         }
-    })
-    if(!user){
-        res.status(400)
-        res.json({messgae:"user is not found"})
-        return;
+        const contact = await prisma.contact.create({
+            data:{
+                otherUserId:req.body.otherUserId,
+                otherUserName:req.body.otherUserName,
+                otherUserEmail:req.body.otherUserEmail,
+                otherUserAvater:req.body.otherUserAvater,
+                belongToId:req.user.id
+            }
+        })
+        res.json({data:contact})
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
     }
-    const existEmail = await prisma.contact.findUnique({
-        where:{
-            belongToId:user.id,
-            otherUserEmail:req.body.otherUserEmail
-        }
-    })
-    if(existEmail){
-        res.status(400)
-        res.json({messgae:"Email is already exist"})
-        return;
-    }
-    const contact = await prisma.contact.create({
-        data:{
-            otherUserId:req.body.otherUserId,
-            otherUserName:req.body.otherUserName,
-            otherUserEmail:req.body.otherUserEmail,
-            otherUserAvater:req.body.otherUserAvater,
-            belongToId:user.id
-        }
-    })
-    res.json({data:contact})
+    
 }
 
 export const deleteContact = async (req,res) => {
