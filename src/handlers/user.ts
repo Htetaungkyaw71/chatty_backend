@@ -3,9 +3,7 @@ import { comparepassword, createJWT, hashpassword } from "../modules/auth";
 
 
 export const createNewUser = async(req, res)=>{
-
-
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
         where:{
             email:req.body.email
         }
@@ -29,7 +27,7 @@ export const createNewUser = async(req, res)=>{
 }
 
 export const signin = async(req,res)=>{
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
         where:{
             email:req.body.email
         }
