@@ -19,10 +19,6 @@ app.use(express.static("static"));
 app.post('/user',createNewUser)
 app.post('/signin',signin)
 
-app.get("/", (req, res) => {
-  res.json({message:"Hello world"})
-});
-
 app.use('/api', protect, router)
 
 app.listen(port, () => {
