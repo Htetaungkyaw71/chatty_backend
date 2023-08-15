@@ -8,10 +8,13 @@ import { createNewUser, signin } from "./handlers/user";
 
 dotenv.config();
 const app = express();
+app.use(express.json())
+app.use(express.urlencoded({extended:true}))
 const port = 5000;
 
 
 app.use(express.static("static"));
+
 
 app.post('/user',createNewUser)
 app.post('/signin',signin)
