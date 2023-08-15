@@ -1,7 +1,11 @@
 import express from "express"
 import router from "./routes";
+import * as dotenv from "dotenv";
+import { protect } from "./modules/auth";
 
 
+
+dotenv.config();
 const app = express();
 const port = 5000;
 
@@ -13,7 +17,7 @@ app.get("/", (req, res) => {
   res.json({message:"Hello world"})
 });
 
-app.use('/api',router)
+app.use('/api', protect, router)
 
 app.listen(port, () => {
   console.log(`Server is listening at http://localhost:${port}`);
