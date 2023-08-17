@@ -26,6 +26,31 @@ export const createNewUser = async(req, res)=>{
    
 }
 
+
+
+export const updateUser = async(req, res)=>{
+    const user = await prisma.user.findUnique({
+        where:{
+            id:req.params.id
+        }
+    })
+    if(!user){
+        res.status(401)
+        res.json({message:"user is not found"})
+        return;
+    }
+    const updateUser = await prisma.user.update({
+        where:{
+            id:user.id
+        },
+        data:{
+                avater:req.body.image,
+                isAvater:true
+            }
+        })
+    res.json({data:updateUser})
+}
+
 export const signin = async(req,res)=>{
     const user = await prisma.user.findFirst({
         where:{
