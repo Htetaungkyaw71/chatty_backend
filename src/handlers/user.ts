@@ -27,6 +27,17 @@ export const createNewUser = async(req, res)=>{
 }
 
 
+export const getAllUser = async(req, res)=>{
+    try {
+        const users = await prisma.user.findMany()
+        res.json({data:users})
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+
 
 export const updateUser = async(req, res)=>{
     const user = await prisma.user.findUnique({

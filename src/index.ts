@@ -4,7 +4,8 @@ import * as dotenv from "dotenv";
 import { protect } from "./modules/auth";
 import cors from "cors";
 import morgan from "morgan"
-import { createNewUser, signin, updateUser } from "./handlers/user";
+import { createNewUser, getAllUser, signin, updateUser } from "./handlers/user";
+import { getAllContact } from "./handlers/contact";
 
 
 
@@ -22,10 +23,11 @@ const port = 5000;
 
 app.use(express.static("static"));
 
-
+app.get('/users',getAllUser)
 app.post('/user',createNewUser)
 app.post('/signin',signin)
 app.put('/updateprofile/:id',updateUser)
+
 
 app.use('/api', protect, router)
 
