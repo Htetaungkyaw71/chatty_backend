@@ -45,6 +45,36 @@ export const createMessage = async(req,res)=>{
       }
 }
 
+function generateUniqueRoomId(userId1, userId2) {
+  const sortedUserIds = [userId1, userId2].sort();
+  const roomId = sortedUserIds.join('_');
+  return roomId;
+}
+
+export const createRoom = async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: req.user.id,
+      },
+    });
+    if (!user) {
+      res.status(400).json({ message: 'User not found' });
+      return;
+    }
+  
+    
+
+    const otherUserId = req.body.otherUserId;
+    const roomId = generateUniqueRoomId(user.id, otherUserId);
+
+    res.json({ roomId });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 export const deleteMessage = async (req,res) => {
     try {
         const message = await prisma.message.delete({
