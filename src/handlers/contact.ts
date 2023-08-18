@@ -25,6 +25,8 @@ export const createContact = async(req,res)=>{
                 belongToId: req.user.id
             }
         });
+
+        console.log("existing",existingContact)
     
         if (existingContact) {
             res.status(409).json({ message: 'Contact already exists' });

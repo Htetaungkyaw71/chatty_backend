@@ -16,8 +16,8 @@ model User {
   name      String
   email     String    @unique
   password  String
-  isAvatar  Boolean   @default(false)
-  avatar    String    @default("")
+  isAvater  Boolean   @default(false)
+  avater    String    @default("")
   messages   Message[]
   contacts   Contact[]
 }
@@ -28,7 +28,7 @@ model Message {
   roomId    String
   text      String
   senderId  String
-  sender    User     @relation(fields: [senderId], references: [id])
+  sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
 }
 
 model Contact {
@@ -36,8 +36,8 @@ model Contact {
   createdAt       DateTime @default(now())
   otherUserId     String
   otherUserName   String
-  otherUserEmail  String   @unique
+  otherUserEmail  String   
   otherUserAvater String
   belongToId      String
-  belongTo        User     @relation(fields: [belongToId], references: [id])
+  belongTo        User     @relation(fields: [belongToId], references: [id], onDelete: Cascade)
 }
