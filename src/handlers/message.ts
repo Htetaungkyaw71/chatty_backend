@@ -9,6 +9,10 @@ export const getAllMessages = async(req,res)=>{
           },
           include: {
             sender: true,
+          
+          },
+          orderBy: {
+            createdAt: 'asc',
           },
         });
         res.json({ data: messages });

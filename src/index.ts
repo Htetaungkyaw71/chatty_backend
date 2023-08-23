@@ -4,14 +4,16 @@ import * as dotenv from "dotenv";
 import { protect } from "./modules/auth";
 import cors from "cors";
 import morgan from "morgan"
-import { createNewUser, getAllUser, signin, updateUser } from "./handlers/user";
+import { createNewUser, getAllUser, getUser, signin, updateUser } from "./handlers/user";
 import { getAllContact } from "./handlers/contact";
+import {Server} from "socket.io";
 
 
 
 dotenv.config();
 
 const app = express();
+
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
@@ -24,6 +26,7 @@ const port = 5000;
 app.use(express.static("static"));
 
 app.get('/users',getAllUser)
+app.get('/users/:id',getUser)
 app.post('/user',createNewUser)
 app.post('/signin',signin)
 app.put('/updateprofile/:id',updateUser)
@@ -31,8 +34,30 @@ app.put('/updateprofile/:id',updateUser)
 
 app.use('/api', protect, router)
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server is listening at http://localhost:${port}`);
+});
+const io = new Server(server,{
+  cors: {
+    origin: "*",
+    credentials: true,
+  },
+});
+
+global.onlineUsers = new Map();
+io.on("connection", (socket) => {
+  global.chatSocket = socket;
+  socket.on("add-user", (userId) => {
+    global.onlineUsers.set(userId, socket.id);
+  });
+
+  socket.on("send-msg", (data) => {
+    console.log(data)
+    const sendUserSocket = global.onlineUsers.get(data.to);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit("msg-recieve", data.msg);
+    }
+  });
 });
 
 
