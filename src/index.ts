@@ -44,32 +44,61 @@ const io = new Server(server,{
   },
 });
 
+
+let users = [];
 global.onlineUsers = new Map();
+
 io.on("connection", (socket) => {
   global.chatSocket = socket;
   socket.on("add-user", (userId) => {
     global.onlineUsers.set(userId, socket.id);
   });
 
+
+  socket.on('newUser', (data) => {
+    const isIdIncluded = users.some(obj => obj.id === data.id);
+    if(!isIdIncluded){
+      users.push(data);
+    }
+    io.emit('newUserResponse', users);
+  });
+
+  socket.on('typing', (data) => socket.broadcast.emit('typingResponse', data));
+
+
+
+
+
   socket.on("send-msg", (data) => {
-    console.log(data)
     const sendUserSocket = global.onlineUsers.get(data.to);
     if (sendUserSocket) {
       socket.to(sendUserSocket).emit("msg-recieve", data.msg);
     }
   });
+  socket.on("del-msg", (data) => {
+    const sendUserSocket = global.onlineUsers.get(data.to);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit("del-recieve", data.id);
+    }
+  });
+  socket.on("edit-msg", (data) => {
+    const sendUserSocket = global.onlineUsers.get(data.to);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit("edit-recieve", data);
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('🔥: A user disconnected');
+    users = users.filter((user) => user.socketID !== socket.id);
+    io.emit('newUserResponse', users);
+    socket.disconnect();
+  });
+
+
+
+
 });
 
 
-// {
-//   "data": {
-//     "id": "a5643620-0f2b-4395-aa9f-4ac53afadb2c",
-//     "createdAt": "2023-08-16T11:25:26.091Z",
-//     "name": "min",
-//     "email": "min@gmail.com",
-//     "password": "$2b$05$AYzdi3CrGVPPqYD.Sy8xTOy2PTv1UCflQ1Bkj5xkMwuLIWZgnZwpK",
-//     "isAvater": false,
-//     "avater": "",
-//     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE1NjQzNjIwLTBmMmItNDM5NS1hYTlmLTRhYzUzYWZhZGIyYyIsImVtYWlsIjoibWluQGdtYWlsLmNvbSIsImlhdCI6MTY5MjE4NTEyNn0.g2lXn1AD2dvvhzLqy1JmPL5YPVnKmU9QZBaWWC-M8aw"
-//   }
-// }
+
