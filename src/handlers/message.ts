@@ -1,4 +1,6 @@
 import prisma from "../db";
+const receiveImage = require('../modules/multerMiddleware');
+const { uploadImage } = require('../modules/cloudinaryUtils')
 
 export const getAllMessages = async(req,res)=>{
     try {
@@ -49,6 +51,50 @@ export const createMessage = async(req,res)=>{
       }
 }
 
+
+export const updateImage = (req,res)=>{
+  receiveImage(req, res, async (err) => {
+      if (err) {
+          return res.json({ error: err.message });
+      }
+
+      try {
+          const user = await prisma.user.findUnique({
+            where: {
+              id: req.user.id,
+            },
+          });
+          if (!user) {
+            res.status(400).json({ message: 'User not found' });
+            return;
+          }
+
+          const imageStream = req.file.buffer;
+          const imageName = new Date().getTime().toString();
+  
+          const uploadResult = await uploadImage(imageStream, imageName);
+  
+          const uploadedUrl = uploadResult.url;
+          const updatedImg = await prisma.message.create({
+            data: {
+              text: req.body.text,
+              image: uploadedUrl,
+              roomId: req.body.roomId,
+              senderId: user.id,
+            },
+          })
+          res.json({data:updatedImg})
+      } catch (error) {
+          console.log("Backend Error:", error)
+          return res.json({ error: 'Failed to upload' });
+      }
+      
+  })
+ 
+
+}
+
+
 function generateUniqueRoomId(userId1, userId2) {
   const sortedUserIds = [userId1, userId2].sort();
   const roomId = sortedUserIds.join('_');
@@ -67,8 +113,6 @@ export const createRoom = async (req, res) => {
       return;
     }
   
-    
-
     const otherUserId = req.body.otherUserId;
     const roomId = generateUniqueRoomId(user.id, otherUserId);
 

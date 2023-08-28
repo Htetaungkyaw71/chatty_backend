@@ -66,9 +66,6 @@ io.on("connection", (socket) => {
   socket.on('typing', (data) => socket.broadcast.emit('typingResponse', data));
 
 
-
-
-
   socket.on("send-msg", (data) => {
     const sendUserSocket = global.onlineUsers.get(data.to);
     if (sendUserSocket) {

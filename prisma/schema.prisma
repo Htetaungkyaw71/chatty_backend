@@ -26,7 +26,8 @@ model Message {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   roomId    String
-  text      String
+  image     String?
+  text      String?
   senderId  String
   sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
 }
