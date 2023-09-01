@@ -159,9 +159,9 @@ export const updateMessage = async (req,res) => {
 
 export const updateIndicator = async (req,res) => {
   try {
-      const message = await prisma.message.update({
+      const message = await prisma.message.updateMany({
           where:{
-              id:req.params.id
+              roomId:req.params.id
           },
           data:{
               indicator:"received"
