@@ -55,11 +55,31 @@ io.on("connection", (socket) => {
   });
 
 
+  socket.emit("me", socket.id)
+
+	socket.on("disconnect", () => {
+		socket.broadcast.emit("callEnded")
+	})
+
+	socket.on("callUser", (data) => {
+		io.to(data.userToCall).emit("callUser", { signal: data.signalData, from: data.from })
+	})
+
+	socket.on("answerCall", (data) => {
+		io.to(data.to).emit("callAccepted", data.signal)
+	})
+
+
+
+
+
+
   socket.on('newUser', (data) => {
     const isIdIncluded = users.some(obj => obj.id === data.id);
     if(!isIdIncluded){
       users.push(data);
     }
+
     io.emit('newUserResponse', users);
   });
 
@@ -72,6 +92,10 @@ io.on("connection", (socket) => {
       socket.to(sendUserSocket).emit("msg-recieve", data.msg);
     }
   });
+
+
+
+
   socket.on("del-msg", (data) => {
     const sendUserSocket = global.onlineUsers.get(data.to);
     if (sendUserSocket) {
@@ -91,6 +115,8 @@ io.on("connection", (socket) => {
     io.emit('newUserResponse', users);
     socket.disconnect();
   });
+
+  
 
 
 

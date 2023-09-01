@@ -1,5 +1,5 @@
 import {Router} from "express";
-import { createMessage, createRoom, deleteMessage, getAllMessages, updateMessage, updateImage } from "./handlers/message";
+import { createMessage, createRoom, deleteMessage, getAllMessages, updateMessage, updateImage, updateIndicator } from "./handlers/message";
 import { body } from "express-validator";
 import { validateInput } from "./modules/middleware";
 import { createContact, deleteContact, getAllContact } from "./handlers/contact";
@@ -25,6 +25,9 @@ router.post("/createroom",
 router.put("/message/:id",
     body("text").isString(),
     validateInput, updateMessage);
+
+
+router.put("/indicator/:id", updateIndicator);
     
 router.delete("/message/:id", deleteMessage);
 

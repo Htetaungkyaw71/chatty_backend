@@ -28,6 +28,7 @@ model Message {
   roomId    String
   image     String?
   text      String?
+  indicator String?
   senderId  String
   sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
 }

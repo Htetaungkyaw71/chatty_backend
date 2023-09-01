@@ -40,6 +40,7 @@ export const createMessage = async(req,res)=>{
           data: {
             text: req.body.text,
             roomId: req.body.roomId,
+            indicator: "sent",
             senderId: user.id,
           },
         });
@@ -154,4 +155,22 @@ export const updateMessage = async (req,res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
    
+}
+
+export const updateIndicator = async (req,res) => {
+  try {
+      const message = await prisma.message.update({
+          where:{
+              id:req.params.id
+          },
+          data:{
+              indicator:"received"
+          },
+      })
+      res.json({data:message})
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal server error' });
+  }
+ 
 }
