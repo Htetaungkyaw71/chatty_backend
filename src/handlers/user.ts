@@ -76,6 +76,30 @@ export const updateUser = async(req, res)=>{
     res.json({data:updateUser})
 }
 
+export const updateStatus = async(req, res)=>{
+    const user = await prisma.user.findUnique({
+        where:{
+            id:req.params.id
+        }
+    })
+    if(!user){
+        res.status(401)
+        res.json({message:"user is not found"})
+        return;
+    }
+    const updateStatus = await prisma.user.update({
+        where:{
+            id:user.id
+        },
+        data:{
+                status:req.body.status
+            }
+        })
+    res.json({data:updateStatus})
+}
+
+
+
 export const signin = async(req,res)=>{
     const user = await prisma.user.findFirst({
         where:{

@@ -4,7 +4,7 @@ import * as dotenv from "dotenv";
 import { protect } from "./modules/auth";
 import cors from "cors";
 import morgan from "morgan"
-import { createNewUser, getAllUser, getUser, signin, updateUser } from "./handlers/user";
+import { createNewUser, getAllUser, getUser, signin, updateStatus, updateUser } from "./handlers/user";
 import { getAllContact } from "./handlers/contact";
 import {Server} from "socket.io";
 
@@ -30,6 +30,7 @@ app.get('/users/:id',getUser)
 app.post('/user',createNewUser)
 app.post('/signin',signin)
 app.put('/updateprofile/:id',updateUser)
+app.put('/updatestatus/:id',updateStatus)
 
 
 app.use('/api', protect, router)

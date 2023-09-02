@@ -18,6 +18,7 @@ model User {
   password  String
   isAvater  Boolean   @default(false)
   avater    String    @default("")
+  status    String?
   messages   Message[]
   contacts   Contact[]
 }
