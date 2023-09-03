@@ -1,5 +1,5 @@
 import {Router} from "express";
-import { createMessage, createRoom, deleteMessage, getAllMessages, updateMessage, updateImage, updateIndicator } from "./handlers/message";
+import { createMessage, createRoom, deleteMessage, getAllMessages, updateMessage, updateImage, updateIndicator, updateEmoji } from "./handlers/message";
 import { body } from "express-validator";
 import { validateInput } from "./modules/middleware";
 import { createContact, deleteContact, getAllContact } from "./handlers/contact";
@@ -28,6 +28,7 @@ router.put("/message/:id",
 
 
 router.put("/indicator/:id", updateIndicator);
+router.put("/emoji/:id", updateEmoji);
     
 router.delete("/message/:id", deleteMessage);
 

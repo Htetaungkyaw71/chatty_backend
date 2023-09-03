@@ -174,3 +174,21 @@ export const updateIndicator = async (req,res) => {
   }
  
 }
+
+export const updateEmoji = async (req,res) => {
+  try {
+      const message = await prisma.message.update({
+          where:{
+              id:req.params.id
+          },
+          data:{
+              emoji:req.body.emoji
+          },
+      })
+      res.json({data:message})
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal server error' });
+  }
+ 
+}
