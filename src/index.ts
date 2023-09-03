@@ -94,6 +94,12 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("send-emoji", (data) => {
+    const sendUserSocket = global.onlineUsers.get(data.to);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit("emoji-recieve", data.msg);
+    }
+  });
 
 
 
