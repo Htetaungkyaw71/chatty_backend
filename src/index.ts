@@ -5,8 +5,8 @@ import { protect } from "./modules/auth";
 import cors from "cors";
 import morgan from "morgan"
 import { createNewUser, getAllUser, getUser, signin, updateStatus, updateUser } from "./handlers/user";
-import { getAllContact } from "./handlers/contact";
 import {Server} from "socket.io";
+import config from "./config";
 
 
 
@@ -19,7 +19,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
-const port = 5000;
+
 
 
 
@@ -35,8 +35,8 @@ app.put('/updatestatus/:id',updateStatus)
 
 app.use('/api', protect, router)
 
-const server = app.listen(port, () => {
-  console.log(`Server is listening at http://localhost:${port}`);
+const server = app.listen(config.port, () => {
+  console.log(`Server is listening at http://localhost:${config.port}`);
 });
 const io = new Server(server,{
   cors: {
@@ -57,21 +57,6 @@ io.on("connection", (socket) => {
 
 
   socket.emit("me", socket.id)
-
-	socket.on("disconnect", () => {
-		socket.broadcast.emit("callEnded")
-	})
-
-	socket.on("callUser", (data) => {
-		io.to(data.userToCall).emit("callUser", { signal: data.signalData, from: data.from })
-	})
-
-	socket.on("answerCall", (data) => {
-		io.to(data.to).emit("callAccepted", data.signal)
-	})
-
-
-
 
 
 
